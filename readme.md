@@ -25,7 +25,7 @@ echo sunday,1\nmonday,2\ntuesday,3 | catchart
 ```
 echo 1,2,3\n4,5,6\n-1,-2,-3 | catchart
 ```
-![catchart #3](/2.png?raw=true "catchart #3")
+![catchart #3](/3.png?raw=true "catchart #3")
 
 ## api
 TBD
