@@ -7,6 +7,6 @@ module.exports = rc('catchart', {
 
 	dataFunction: undefined, // timeSeriesData, keyValueData, multiValueData
 
-	// 'line', 'scatter', 'pie', 'percentage', 'heatmap'
+	// 'line', 'scatter', 'bar', 'percentage', 'heatmap'
 	chartType: 'line'
 })

@@ -7,6 +7,9 @@
     "name": "Yaniv Kessler",
     "email": "yanivk@gmail.com"
   },
+  "bin": {
+    "catchart": "catchart.js"
+  },
   "scripts": {},
   "dependencies": {
     "custom-human-time": "^1.0.3",
