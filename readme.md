@@ -13,7 +13,7 @@ _(pronounced ca-chart)_
 ```
 echo 1\n2\n3 | catchart
 ```
-![catchart #1](/1.png?raw=true | width=100 "catchart #1")
+![catchart #1](/1.png?raw=true | width=100)
 
 #### custom label / value
 ```
