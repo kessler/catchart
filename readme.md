@@ -13,18 +13,18 @@ _(pronounced ca-chart)_
 ```
 echo 1\n2\n3 | catchart
 ```
-<img src="/1.png?raw=true" width="100">
+<img src="/1.png?raw=true" width="400">
 #### custom label / value
 ```
 echo sunday,1\nmonday,2\ntuesday,3 | catchart
 ```
-![catchart #2](/2.png?raw=true "catchart #2")
+<img src="/2.png?raw=true" width="400">
 
 #### multiple data sets over time
 ```
 echo 1,2,3\n4,5,6\n-1,-2,-3 | catchart
 ```
-![catchart #3](/3.png?raw=true "catchart #3")
+<img src="/3.png?raw=true" width="400">
 
 ## api
 TBD
