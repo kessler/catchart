@@ -13,8 +13,7 @@ _(pronounced ca-chart)_
 ```
 echo 1\n2\n3 | catchart
 ```
-![catchart #1](/1.png?raw=true | width=100)
-
+<img src="/1.png?raw=true" width="100">
 #### custom label / value
 ```
 echo sunday,1\nmonday,2\ntuesday,3 | catchart
