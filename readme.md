@@ -3,6 +3,8 @@ _(pronounced ca-chart)_
 
 **cat something from command line to a chart in the browser**
 
+uses [frappe charts](https://frappe.github.io/charts/) for, ahem, charting...
+
 [![npm status](http://img.shields.io/npm/v/catchart.svg?style=flat-square)](https://www.npmjs.org/package/catchart) 
 
 ## command line
@@ -14,6 +16,7 @@ _(pronounced ca-chart)_
 echo 1\n2\n3 | catchart
 ```
 <img src="/1.png?raw=true" width="400">
+
 #### custom label / value
 ```
 echo sunday,1\nmonday,2\ntuesday,3 | catchart
