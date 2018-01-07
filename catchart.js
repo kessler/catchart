@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const chartcat = require('./index')
 const config = require('./config')
 const StreamSlicer = require('stream-slicer')
