@@ -37,11 +37,13 @@ echo 1,2,3\n4,5,6\n-1,-2,-3 | catchart --title=catchart --chartType=bar
 ```
 chart types: `line`, `bar`, `radar`, `pie`
 
-#### Also works with json
+<img src="/4.png?raw=true" width="400">
+
+#### JSON input works too!
 ```
 echo "{ \"data\": 1 }"\n"{ \"data\": 2, \"label\": \"foo\" }"\n | catchart
 ```
-<img src="/4.png?raw=true" width="400">
+
 
 ## api
 `catchart` cli in it's simpest form, looks very much like this:
