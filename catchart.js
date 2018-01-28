@@ -1,7 +1,15 @@
 #!/usr/bin/env node
+
 const chartcat = require('./index')
-const config = require('./config')
 const StreamSlicer = require('stream-slicer')
 const pump = require('pump')
+const program = require('./program')
 
-chartcat(pump(process.stdin, new StreamSlicer()), config)
+let slicer = new StreamSlicer({ sliceBy: program.rowSeparator })
+let chartStream = chartcat(program)
+
+pump(process.stdin, slicer, chartStream, err => {
+	if (err) {
+		return console.error(err)
+	}
+})

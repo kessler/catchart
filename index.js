@@ -1,9 +1,15 @@
 const hcat = require('hcat')
-const WebSocketServer = require('ws').Server
+const WebSocket = require('ws')
 const fs = require('fs')
 const path = require('path')
 const HumanTime = require('custom-human-time')
 const LinkedList = require('digital-chain')
+const through2 = require('through2')
+const pump = require('pump')
+const debug = require('debug')('catchart')
+const defaultConfig = require('./config')
+
+const { isNullOrUndefined } = require('util')
 
 const timeFormatter = new HumanTime({
 	names: {
@@ -14,123 +20,289 @@ const timeFormatter = new HumanTime({
 	}
 })
 
-const client = fs.readFileSync(path.join(__dirname, 'dist', 'client.js'), 'utf8')
-const css = fs.readFileSync(path.join(__dirname, 'node_modules', 'frappe-charts', 'dist', 'frappe-charts.min.css'))
+let initialized = false
 
-module.exports = function(stream, config) {
-	config = config || {}
+module.exports = function(config) {
+	// TODO maybe apply defaults here for programmatic use
+	config = config || defaultConfig
+	
+	debug('config is %o', config)
+
+	// hcat option
+	// we don't want the server to die right after first request
+	// since we're serving websockets, so this is enforced
 	config.serveOnce = false
 
-	// how long we're resting between exec()
-	let waitTime
-
-	// start time of the first chunk
-	let startTime
-	let selectedDataFunction
-	let buff = new LinkedList()
-
-	stream.once('data', init)
-	stream.once('data', () => startTime = Date.now())
-	stream.on('data', (chunk) => {
-		buff.push(chunk)
-	})
-
-	const dataFunctions = {
-		keyValueData: data => {
-			let splitted = data.split(',')
-
-			if (splitted.length !== 2) {
-				throw new Error(`invalid data for key / value pair ${data}`)
-			}
-
-			return { label: splitted[0], value: [splitted[1]] }
-		},
-
-		timeSeriesData: data => {
-			let timeDiff = Date.now() - startTime
-			return {
-				label: timeFormatter.print(timeDiff),
-				value: [data]
-			}
-		},
-
-		multiValueData: data => {
-			let timeDiff = Date.now() - startTime
-			let splitted = data.split(',')
-			for (let i = 0; i < splitted.length; i++) {
-				splitted[i] = parseFloat(splitted[i])
-			}
-
-			return {
-				label: timeFormatter.print(timeDiff),
-				value: splitted
-			}
-		}
+	const state = {
+		// how long we're resting between exec() when the buffer is empty
+		// this number will grow exponentially if the buffer is empty 
+		// and then reset back to 10 when the buffer has something in it
+		websocketTransmitDelayMillis: 10,
+		// start time of the first chunk
+		startTime: undefined,
+		buff: new LinkedList(),
+		websocketConnected: false,
+		inputFormat: config.inputFormat,
+		dataField: config.dataField,
+		labelSource: config.labelSource
 	}
 
-	function init(chunk) {
-		if (config.dataFunction !== undefined) {
-			selectedDataFunction = dataFunctions[config.dataFunction]
-			if (!selectedDataFunction) {
-				throw new Error(`invalid data function ${config.dataFunction}`)
-			}			
+	// start the show
+	let stream = through2(processInput)
+	stream.on('finish', shutdown)
+
+	return stream
+
+	function processInput(chunk, enc, cb) {
+
+		if (enc !== 'buffer') {
+			throw new Error(`unexpected encoding ${enc}`)
 		}
 
-		let data = toString(chunk).split(',')
+		let data = toString(chunk)
 
-		selectedDataFunction = selectDataFunction(data)
-
-		if (data.length > 2 && selectedDataFunction === dataFunctions.multiValueData) {
-			config.datasetCount = data.length
+		if (!initialized) {
+			init(data)
 		}
-		
-		const html = `
-<html>
-	<head>
-		<style>${css}</style>
-		<script>
-			$$context = ${JSON.stringify(config)}
-		</script>
-		<script>${client}</script>
-	</head>
-	<body>
-	<div id="chart"></div>
-	</body>
-</html>
-`
-		let server = hcat(html, config)
-		let wss = new WebSocketServer({ server: server })
-		wss.on('connection', ws => exec(ws))
+
+		data = state.parseFunction(data)
+
+		let entry = {
+			values: state.dataFunction(data),
+			label: state.labelFunction(data, state)
+		}
+
+		debug('process input [%o]', entry)
+		state.buff.push(entry)
+
+		cb()
+	}
+
+	function init(data) {
+		state.startTime = Date.now()
+
+		let dataField = state.dataField
+		let labelSource = state.labelSource
+
+		if (state.inputFormat === 'auto') {
+			debug('inputFormat is "auto"')
+			if (data.startsWith('{')) {
+				state.inputFormat = 'json'
+			} else {
+				state.inputFormat = 'csv'
+			}
+		}
+
+		debug('inputFormat set to "%s"', state.inputFormat)
+
+		if (state.inputFormat === 'json') {
+			state.parseFunction = parseFunctions.json
+
+			if (dataField === 'auto') {
+				debug('dataField is "auto"')
+				dataField = ['value', 'data']
+			}
+
+			if (!Array.isArray(dataField)) {
+				dataField = [dataField]
+			}
+
+			debug('dataField set to [%o]', dataField)
+
+			if (labelSource === 'auto') {
+				debug('lableSource is "auto"')
+				labelSource = ['label', 'title', 'key']
+			}
+
+			if (!Array.isArray(labelSource)) {
+				labelSource = [labelSource]
+			}
+
+			debug('labelSource set to [%o]', labelSource)
+
+			state.dataFunction = dataFunctions.json(dataField)
+			state.labelFunction = labelFunctions.json(labelSource)
+
+		} else {
+
+			state.parseFunction = parseFunctions.arrSplit
+			debug('labelSource is "%s"', labelSource)
+
+			if (labelSource === 'auto') {
+				state.dataFunction = dataFunctions.arr
+				state.labelFunction = labelFunctions.timeSeries
+			} else {
+				state.dataFunction = dataFunctions.arrSlice(1)
+				state.labelFunction = labelFunctions.arrFirst
+			}
+		}
+
+		if (config.fieldCount === 'auto') {
+			debug('fieldCount is set to "auto"')
+			let parsed = state.parseFunction(data)
+			let sliced = state.dataFunction(parsed)
+			config.fieldCount = sliced.length
+			debug('setting fieldCount to "%d", deduced from first row of data', sliced.length)
+		}
+
+		const clientContext = {
+			chartType: config.chartType,
+			noFill: config.noFill,
+			usePatterns: config.usePatterns,
+			windowSize: config.windowSize,
+			title: config.title,
+			fieldCount: config.fieldCount
+		}
+
+		debug('client context: %o', clientContext)
+
+		state.server = hcat(createClientPage(clientContext), config)
+
+		let wss = new WebSocket.Server({ server: state.server })
+		wss.on('connection', onIncomingConnection)
+
+		initialized = true
+	}
+
+	function onIncomingConnection(ws) {
+		if (state.websocketConnected) {
+			return ws.close(-1, 'too many connections')
+		}
+
+		state.websocketConnected = true
+
+		ws.on('error', err => {
+			console.error('websocket error', err)
+		})
+
+		ws.on('close', () => {
+			state.websocketConnected = false
+		})
+
+		exec(ws)
 	}
 
 	function exec(ws) {
-		if (buff.length > 0) {
-			waitTime = 10
-			let data = selectedDataFunction(toString(buff.shift()))
-			return ws.send(JSON.stringify(data), () => exec(ws))
+		if (ws.readyState === WebSocket.CLOSE) return
+
+		if (state.buff.length > 0  && ws.readyState === WebSocket.OPEN) {
+			state.websocketTransmitDelayMillis = 10
+			return ws.send(JSON.stringify(state.buff.shift()), () => exec(ws))
 		}
 
-		if (waitTime < 2000) {
-			waitTime *= 2
+		// some sort of exponential wait time with an upper cap
+		// 10 * 2^8
+		if (state.websocketTransmitDelayMillis < 2560) {
+			state.websocketTransmitDelayMillis *= 2
 		}
 
-		setTimeout(() => exec(ws), waitTime)
+		setTimeout(() => exec(ws), state.websocketTransmitDelayMillis)
 	}
 
-	function selectDataFunction(data) {
-		
-		if (data.length === 2) {
-			return dataFunctions.keyValueData
+	function shutdown() {
+		if (state.server) {
+			state.server.close()
 		}
+	}
+}
 
-		if (data.length > 2) {
-			return dataFunctions.multiValueData
+function toString(chunk) {
+	return chunk.toString().trim()
+}
+
+const labelFunctions = {
+	timeSeries: (date, state) => {
+		let timeDiff = Date.now() - state.startTime
+		return timeFormatter.print(timeDiff)
+	},
+
+	json: (fields) => {
+		let extract = extractJson(fields)
+		return (data, state) => {
+			let result = extract(data)
+
+			if (!result) {
+				result = labelFunctions.timeSeries(data, state)
+			}
+
+			return result
 		}
+	},
 
-		return dataFunctions.timeSeriesData
+	arrFirst(data) {
+		return data[0]
 	}
+}
 
-	function toString(chunk) {
-		return chunk.toString().trim()
+const dataFunctions = {
+	arr: data => {
+		for (let i = 0; i < data.length; i++) {
+			let number = parseFloat(data[i])
+			if (!isNaN(number)) {
+				data[i] = number
+			}
+		}
+		return data
+	},
+
+	arrSlice: howMuch => {
+		return data => {
+			return dataFunctions.arr(data.slice(howMuch))
+		}
+	},
+
+	json: fields => {
+		let extract = extractJson(fields)
+
+		return data => {
+			let result = extract(data)
+
+			if (!Array.isArray(result)) {
+				result = [result]
+			}
+
+			result = dataFunctions.arr(result)
+
+			return result
+		}
 	}
+}
+
+const parseFunctions = {
+	json: JSON.parse,
+	arrSplit: data => data.split(',')
+}
+
+function extractJson(fields) {
+	return data => {
+		for (let f of fields) {
+			let value = data[f]
+			if (!isNullOrUndefined(value)) {
+				return value
+			}
+		}
+	}
+}
+
+function createClientPage(clientContext) {
+
+	let client = fs.readFileSync(path.join(__dirname, 'dist', 'client.js'), 'utf8')
+
+	return `
+	<html>
+		<head>
+			<script>
+				$$context = ${JSON.stringify(clientContext)}
+			</script>
+			<script>${client}</script>
+		</head>
+		<body>
+			<div style="text-align:center">
+				<div class="chart-container" style="width: 95%;margin:auto;">
+					<canvas id="myChart"></canvas>
+				</div>
+			</div>
+		</body>
+	</html>
+	`
 }
