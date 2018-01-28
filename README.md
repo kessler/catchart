@@ -1,4 +1,4 @@
-# catchart (WIP)
+# catchart
 _(pronounced ca-chart)_
 
 **cat something from command line to a chart in the browser**
