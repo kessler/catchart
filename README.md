@@ -46,7 +46,7 @@ echo "{ \"data\": 1 }"\n"{ \"data\": 2, \"label\": \"foo\" }"\n | catchart
 
 
 ## api
-`catchart` cli in it's simpest form, looks very much like this:
+`catchart` cli in it's simplest form, looks very much like this:
 
 ```js
 const catchart = require('catchart')
