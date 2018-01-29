@@ -1,7 +1,7 @@
 # catchart
 _(pronounced ca-chart)_
 
-**cat something from command line to a chart in the browser**
+**Pipe something from command line to a chart in the browser**
 
 uses [chart.js](http://www.chartjs.org/) for, ahem, charting...
 
