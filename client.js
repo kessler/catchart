@@ -5,7 +5,12 @@ const pattern = require('patternomaly')
 domReady(main)
 
 function main() {
+
 	const context = global.$$context
+
+	if (context.showValueLabels) {
+		labelPlugin()
+	}
 
 	const chartData = {
 		datasets: [],
@@ -125,4 +130,45 @@ function pickPattern() {
 	}
 
 	return patternNames[patternIndex++]
+}
+
+function labelPlugin() {
+	Chart.plugins.register({
+		afterDatasetsDraw
+	})
+
+	function afterDatasetsDraw(chart, easing) {
+
+		// To only draw at the end of animation, check for easing === 1
+		var ctx = chart.ctx
+
+		for (let i = 0; i < chart.data.datasets.length; i++) {
+			let dataset = chart.data.datasets[i]
+			var meta = chart.getDatasetMeta(i)
+			if (!meta.hidden) {
+				for (let j = 0; j < meta.data.length; j++) {
+					let element = meta.data[j]
+
+					// Draw the text in black, with the specified font
+					ctx.fillStyle = 'rgb(0, 0, 0)'
+
+					var fontSize = 16
+					var fontStyle = 'normal'
+					var fontFamily = 'Helvetica Neue'
+					ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily)
+
+					// Just naively convert to string for now
+					var dataString = dataset.data[j].toString()
+
+					// Make sure alignment settings are correct
+					ctx.textAlign = 'center'
+					ctx.textBaseline = 'middle'
+
+					var padding = 5
+					var position = element.tooltipPosition()
+					ctx.fillText(dataString, position.x, position.y - (fontSize / 2) - padding)
+				}
+			}
+		}
+	}
 }

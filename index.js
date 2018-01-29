@@ -151,7 +151,8 @@ module.exports = function(config) {
 			usePatterns: config.usePatterns,
 			windowSize: config.windowSize,
 			title: config.title,
-			fieldCount: config.fieldCount
+			fieldCount: config.fieldCount,
+			showValueLabels: config.showValueLabels
 		}
 
 		debug('client context: %o', clientContext)

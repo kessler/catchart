@@ -1,5 +1,6 @@
 const rc = require('rc')
 
+// TODO unify these comments with program.js
 module.exports = rc('catchart', {
 	rowSeparator: '\n',
 
@@ -24,6 +25,9 @@ module.exports = rc('catchart', {
 	// as label
 	// when labels cannot be obtained, use timeSeries
 	labelSource: 'auto',
+
+	// show labels on values in the chart
+	showValueLabels: false,
 
 	// do not fill the area under chart lines with color
 	noFill: false,
