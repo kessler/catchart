@@ -19,9 +19,9 @@ const timeFormatter = new HumanTime({
 	}
 })
 
-let initialized = false
 
 module.exports = function(config) {
+	let initialized = false
 	// TODO maybe apply defaults here for programmatic use
 	config = config || defaultConfig
 	
