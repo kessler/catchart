@@ -5,7 +5,6 @@ const path = require('path')
 const HumanTime = require('custom-human-time')
 const LinkedList = require('digital-chain')
 const through2 = require('through2')
-const pump = require('pump')
 const debug = require('debug')('catchart')
 const defaultConfig = require('./config')
 
