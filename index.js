@@ -7,6 +7,7 @@ const LinkedList = require('digital-chain')
 const through2 = require('through2')
 const debug = require('debug')('catchart')
 const defaultConfig = require('./config')
+const enableDestroy = require('server-destroy')
 
 const { isNullOrUndefined } = require('util')
 
@@ -19,12 +20,12 @@ const timeFormatter = new HumanTime({
 	}
 })
 
-
 module.exports = function(config) {
+	let done = false
 	let initialized = false
 	// TODO maybe apply defaults here for programmatic use
 	config = config || defaultConfig
-	
+
 	debug('config is %o', config)
 
 	// hcat option
@@ -157,9 +158,9 @@ module.exports = function(config) {
 		debug('client context: %o', clientContext)
 
 		state.server = hcat(createClientPage(clientContext), config)
-
-		let wss = new WebSocket.Server({ server: state.server })
-		wss.on('connection', onIncomingConnection)
+		enableDestroy(state.server)
+		state.wss = new WebSocket.Server({ server: state.server })
+		state.wss.on('connection', onIncomingConnection)
 
 		initialized = true
 	}
@@ -183,9 +184,10 @@ module.exports = function(config) {
 	}
 
 	function exec(ws) {
+		if (done) return
 		if (ws.readyState === WebSocket.CLOSE) return
 
-		if (state.buff.length > 0  && ws.readyState === WebSocket.OPEN) {
+		if (state.buff.length > 0 && ws.readyState === WebSocket.OPEN) {
 			state.websocketTransmitDelayMillis = 10
 			return ws.send(JSON.stringify(state.buff.shift()), () => exec(ws))
 		}
@@ -201,7 +203,13 @@ module.exports = function(config) {
 
 	function shutdown() {
 		if (state.server) {
-			state.server.close()
+			setTimeout(() => {
+				debug('shutting down server...')
+				done = true
+				state.wss.clients.forEach(ws => ws.terminate())
+				state.wss.close()
+				state.server.destroy()
+			}, 1000)
 		}
 	}
 }

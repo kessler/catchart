@@ -25,6 +25,7 @@ value in each row will be considered the label`, 'auto')
 	.option('--port <port>', 'hcat config: http port to use, defaults to a randomly picked port', 0)
 	.option('--hostname <hostname>', 'hcat config: hostname of the http server', 'localhost')
 	.option('--contentType <contentType>', 'hcat config: content type of the response', 'text/html')
+	.option('--shutdownDelay <millis>', 'delay (in ms) before shutting down server once ths input stream ended', 1000)
 	.parse(process.argv)
 
 // using \n as default breaks --help

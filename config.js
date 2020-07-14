@@ -39,6 +39,9 @@ module.exports = rc('catchart', {
 	// size of the buffer
 	windowSize: 50,
 
+	// delay (in ms) before shutting down server once ths input stream ended
+	shutdownDelay: 1000,
+
 	// how many fields are in a row
 	fieldCount: 'auto',
 
