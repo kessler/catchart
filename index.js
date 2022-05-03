@@ -297,6 +297,7 @@ function createClientPage(clientContext) {
 	let client = fs.readFileSync(path.join(__dirname, 'dist', 'client.js'), 'utf8')
 
 	return `
+	<!DOCTYPE html>
 	<html>
 		<head>
 			<script>
