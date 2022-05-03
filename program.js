@@ -7,6 +7,7 @@ program.version(version)
 	.option('-w, --windowSize <windowSize>', 'When piping data to catchart, this is the maximum data points that will appear on the graph at any given time', config.windowSize)
 	.option('-t, --title <title>', 'Specify a custom title', config.title)
 	.option('-r, --rowSeparator <rowSeparator>', 'The character that separates rows in the input data (default: \\n)')
+	.option('--logarithmicScale <logarithmicScale>', 'Use logarithmic scaling in axes, possible values: x y or x,y')
 	.option('--inputFormat <inputFormat>', 'The format of each row <auto | json | csv >', config.inputFormat)
 	.option('--dataField <dataField>', 
 		`When the input format is json, this option will specify which field in the row is the source of the data.

@@ -41,7 +41,7 @@ function main() {
 		})
 	}
 
-	const chart = new Chart('myChart', {
+  const chartOptions = {
 		data: chartData,
 		options: {
 			title: {
@@ -50,7 +50,16 @@ function main() {
 			}
 		},
 		type: context.chartType
-	})
+	}
+
+	if (Array.isArray(context.logarithmicScale)) {
+		const scales = chartOptions.options.scales = {}
+		for (const scale of context.logarithmicScale) {
+			scales[scale + 'Axes'] = [{ type: 'logarithmic', display: true }]
+		}
+	}
+
+	const chart = new Chart('myChart', chartOptions)
 
 	const host = global.document.location.host
 

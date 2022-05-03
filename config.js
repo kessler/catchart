@@ -36,6 +36,9 @@ module.exports = rc('catchart', {
 	// this is useful for color blind individuals
 	usePatterns: false,
 
+	// Use logarithmic scaling in axes, possible values: x y or x,y
+	logarithmicScale: undefined,
+
 	// size of the buffer
 	windowSize: 50,
 

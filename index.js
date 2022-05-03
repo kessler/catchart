@@ -27,7 +27,7 @@ module.exports = function(config) {
 	config = config || defaultConfig
 
 	debug('config is %o', config)
-
+	
 	// hcat option
 	// we don't want the server to die right after first request
 	// since we're serving websockets, so this is enforced
@@ -152,7 +152,13 @@ module.exports = function(config) {
 			windowSize: config.windowSize,
 			title: config.title,
 			fieldCount: config.fieldCount,
-			showValueLabels: config.showValueLabels
+			showValueLabels: config.showValueLabels,
+		}
+
+		if (['x','y','x,y','y,x'].includes(config.logarithmicScale)) {
+			clientContext.logarithmicScale = config.logarithmicScale.split(',')
+		} else if (config.logarithmicScale !== undefined) {
+			console.error('WARNING: invalid logarithmicScale value')
 		}
 
 		debug('client context: %o', clientContext)
