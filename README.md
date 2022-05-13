@@ -58,7 +58,7 @@ process.stdin.pipe(new Slicer()).pipe(catchart())
 ## dev
 - clone this repo
 - hack
-- gulp build; node emitter `<csv | singlecsv | json>` | node catchart`
+- npm run build_client; node emitter `<csv | singlecsv | json>` | node catchart`
 - send a PR :)
 
 ### TODOS
