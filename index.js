@@ -139,10 +139,24 @@ module.exports = function(config) {
 
 		if (config.fieldCount === 'auto') {
 			debug('fieldCount is set to "auto"')
-			let parsed = state.parseFunction(data)
-			let sliced = state.dataFunction(parsed)
+			const parsed = state.parseFunction(data)
+			const sliced = state.dataFunction(parsed)
 			config.fieldCount = sliced.length
 			debug('setting fieldCount to "%d", deduced from first row of data', sliced.length)
+		}
+
+		let yAxisAlignment
+
+		if (config.autoAlignYAxis) {
+			debug('autoAlignYAxis is enabled')
+			const parsed = state.parseFunction(data)
+			const sliced = state.dataFunction(parsed)
+			const nMags = sliced.map(calcNumberMagnitude)
+			const magAvg = average(nMags)
+			debug('values magnitude vector is %o, magnitude average is %s', nMags, magAvg)
+
+			yAxisAlignment = splitByAverage(nMags, magAvg)
+			debug(`data series aligment is: left %o, right %o`, yAxisAlignment.left, yAxisAlignment.right)
 		}
 
 		const clientContext = {
@@ -152,7 +166,8 @@ module.exports = function(config) {
 			windowSize: config.windowSize,
 			title: config.title,
 			fieldCount: config.fieldCount,
-			showValueLabels: config.showValueLabels
+			showValueLabels: config.showValueLabels,
+			yAxisAlignment
 		}
 
 		debug('client context: %o', clientContext)
@@ -279,6 +294,26 @@ const dataFunctions = {
 const parseFunctions = {
 	json: JSON.parse,
 	arrSplit: data => data.split(',')
+}
+
+function calcNumberMagnitude(n) {
+	return Math.floor(Math.log10(Math.abs(n)))
+}
+
+function average(values) {
+	return values.reduce((prev, curr) => curr + prev, 0) / values.length
+}
+
+function splitByAverage(values, avg) {
+	const left = []
+	const right = []
+
+	for (let i = 0; i < values.length; i++) {
+		if (values[i] <= avg) left.push(i)
+		else right.push(i)
+	}
+
+	return { right, left }
 }
 
 function extractJson(fields) {

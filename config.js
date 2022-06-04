@@ -26,6 +26,8 @@ module.exports = rc('catchart', {
 	// when labels cannot be obtained, use timeSeries
 	labelSource: 'auto',
 
+	autoAlignYAxis: true,
+
 	// show labels on values in the chart
 	showValueLabels: false,
 

@@ -35,7 +35,7 @@ echo 1,2,3\n4,5,6\n-1,-2,-3\n | catchart
 ```
 echo 1,2,3\n4,5,6\n-1,-2,-3 | catchart --title=catchart --chartType=bar
 ```
-chart types: `line`, `bar`, `radar`, `pie`
+chart types: `line`, `bar`, `radar`, `pie`, `doughnut`, `scatter`, `polar`, `bubble`
 
 <img src="/4.png?raw=true" width="400">
 

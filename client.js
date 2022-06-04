@@ -1,6 +1,7 @@
-const Chart = require('chart.js')
-const domReady = require('domready')
-const pattern = require('patternomaly')
+import Chart from 'chart.js/auto'
+
+import domReady from 'domready'
+import pattern from 'patternomaly'
 
 domReady(main)
 
@@ -17,6 +18,34 @@ function main() {
 		labels: []
 	}
 
+	const chartConfig = {
+		data: chartData,
+		type: context.chartType,
+		options: {
+			title: {
+				display: true,
+				text: context.title
+			},
+
+			scales: {
+				yLeft: {
+					position: 'left'
+				}
+			}
+		}
+	}
+
+	const { left, right } = context.yAxisAlignment || {}
+
+	if (right && right.length > 0) {
+		chartConfig.options.scales.yRight = {
+			position: 'right',
+			grid: {
+				drawOnChartArea: false, // only want the grid lines for one axis to show up
+			}
+		}
+	}
+
 	for (let i = 0; i < context.fieldCount; i++) {
 		let borderColor = pickColor()
 		let patternName = pickPattern()
@@ -28,29 +57,25 @@ function main() {
 			backgroundColor = borderColor.toString(0.2)
 		}
 
-		if (context.noFill) {
-			backgroundColor = new Color(0, 0, 0, 0)
-		}
-
-		chartData.datasets.push({
-			label: `dataset #${i + 1}`,
+		const dataset = {
+			yAxisID: 'yLeft',
 			borderColor: borderColor.toString(),
 			backgroundColor,
 			borderWidth: 1,
+			fill: true,
+			tension: 0.2,
+			label: `dataset #${i + 1}`,
 			data: []
-		})
+		}
+
+		if (right && right.includes(i)) {
+			dataset.yAxisID = 'yRight'
+		}
+
+		chartData.datasets.push(dataset)
 	}
 
-	const chart = new Chart('myChart', {
-		data: chartData,
-		options: {
-			title: {
-				display: true,
-				text: context.title
-			}
-		},
-		type: context.chartType
-	})
+	const chart = new Chart(document.getElementById('myChart'), chartConfig)
 
 	const host = global.document.location.host
 
@@ -65,6 +90,7 @@ function main() {
 	ws.onmessage = event => {
 		let shouldTrim = count++ > context.windowSize
 		let entry = JSON.parse(event.data)
+
 		for (let i = 0; i < entry.values.length; i++) {
 			let data = chartData.datasets[i].data
 			data.push(parseFloat(entry.values[i]))

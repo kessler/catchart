@@ -9,7 +9,6 @@ program.version('0.0.1')
 
 program.command('json')
 	.action(() => {
-
 		let count = 1
 		setInterval(() => {
 			let row = `{ "${program.jsonDataField}": ["${next()}", "${next()}", "foo"]`
@@ -68,6 +67,35 @@ program.command('csv')
 				return count++
 			} else {
 				return count--
+			}
+		}
+	})
+
+program.command('high-variability')
+	.action(() => {
+
+		let count = 1
+		let countHigh = 1
+
+		setInterval(() => {
+			let row = `${next()},${nextHigh()},${next()}`
+			console.error(`emitter: ${row}`)
+			console.log(row)
+		}, 1000)
+
+		function next() {
+			if (Math.random() > 0.5) {
+				return count += 99
+			} else {
+				return count -= 99
+			}
+		}
+
+		function nextHigh() {
+			if (Math.random() > 0.5) {
+				return countHigh += 1000
+			} else {
+				return countHigh -= 1000
 			}
 		}
 	})

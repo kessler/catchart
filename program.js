@@ -18,6 +18,7 @@ While this option is set to "auto" then label will be obtained from "label" or "
 When the input format is csv and labelSource is set to "auto" then the label will be the time difference from the start
 to the data point. Setting labelSource to "row" will case the label to be extracted from the data, specifically the first
 value in each row will be considered the label`, config.labelSource)
+	.option('--autoAlignYAxis', 'automatically align data sets to the left or right based on their values, this is an experimental feature', config.autoAlignYAxis)
 	.option('--showValueLabels', 'show labels on values in the chart', config.showValueLabels)
 	.option('--noFill', 'Do not fill the area under the chart line with color', config.noFill)
 	.option('--usePatterns', 'Fill the area under the chart line with a pattern, this is meant for individuals who suffer from color blindness', config.usePatterns)
@@ -31,6 +32,22 @@ value in each row will be considered the label`, config.labelSource)
 // using \n as default breaks --help
 if (program.rowSeparator === undefined) {
 	program.rowSeparator = config.rowSeparator
+}
+
+if (program.autoAlignYAxis === undefined) {
+	program.autoAlignYAxis = config.autoAlignYAxis
+}
+
+if (program.showValueLabels === undefined) {
+	program.showValueLabels = config.showValueLabels
+}
+
+if (program.noFill === undefined) {
+	program.noFill = config.noFill
+}
+
+if (program.usePatterns === undefined) {
+	program.usePatterns = config.usePatterns
 }
 
 module.exports = program
