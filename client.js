@@ -21,6 +21,7 @@ function main() {
 	const chartConfig = {
 		data: chartData,
 		type: context.chartType,
+		spanGaps: true,
 		options: {
 			title: {
 				display: true,
@@ -35,9 +36,13 @@ function main() {
 		}
 	}
 
-	const { left, right } = context.yAxisAlignment || {}
+	if (context.disableAnimation) {
+		chartConfig.options.animation = false
+	}
 
-	if (right && right.length > 0) {
+	const { left, right } = context.yAxisAlignment
+
+	if (right.length > 0) {
 		chartConfig.options.scales.yRight = {
 			position: 'right',
 			grid: {
@@ -57,20 +62,25 @@ function main() {
 			backgroundColor = borderColor.toString(0.2)
 		}
 
+		let label = `dataset #${i + 1}`
+
 		const dataset = {
 			yAxisID: 'yLeft',
 			borderColor: borderColor.toString(),
 			backgroundColor,
 			borderWidth: 1,
+			pointRadius: 2,
 			fill: !context.noFill,
 			tension: 0.2,
-			label: `dataset #${i + 1}`,
 			data: []
 		}
 
-		if (right && right.includes(i)) {
+		if (right.includes(i)) {
 			dataset.yAxisID = 'yRight'
+			label = `${label} (right)`
 		}
+
+		dataset.label = label
 
 		chartData.datasets.push(dataset)
 	}

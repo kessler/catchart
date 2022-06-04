@@ -11,7 +11,8 @@
     "catchart": "catchart.js"
   },
   "scripts": {
-    "build_client": "npx webpack"
+    "build": "npx webpack",
+    "build_dev": "env BUILD_MODE=development npx webpack"
   },
   "dependencies": {
     "chart.js": "^3.8.0",

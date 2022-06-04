@@ -137,26 +137,30 @@ module.exports = function(config) {
 			}
 		}
 
+		const parsed = state.parseFunction(data)
+		const sliced = state.dataFunction(parsed)
+
 		if (config.fieldCount === 'auto') {
 			debug('fieldCount is set to "auto"')
-			const parsed = state.parseFunction(data)
-			const sliced = state.dataFunction(parsed)
 			config.fieldCount = sliced.length
 			debug('setting fieldCount to "%d", deduced from first row of data', sliced.length)
 		}
 
 		let yAxisAlignment
+		
 
 		if (!config.disableAutoAlignYAxis) {
 			debug('autoAlignYAxis is enabled')
-			const parsed = state.parseFunction(data)
-			const sliced = state.dataFunction(parsed)
+			
 			const nMags = sliced.map(calcNumberMagnitude)
 			const magAvg = average(nMags)
 			debug('values magnitude vector is %o, magnitude average is %s', nMags, magAvg)
-
+			
 			yAxisAlignment = splitByAverage(nMags, magAvg)
 			debug(`data series aligment is: left %o, right %o`, yAxisAlignment.left, yAxisAlignment.right)
+		} else {
+			// map all to left otherwise
+			yAxisAlignment = { left: sliced.map((v, i) => i), right: [] }
 		}
 
 		const clientContext = {
@@ -167,6 +171,7 @@ module.exports = function(config) {
 			title: config.title,
 			fieldCount: config.fieldCount,
 			showValueLabels: config.showValueLabels,
+			disableAnimation: config.disableAnimation,
 			yAxisAlignment
 		}
 
@@ -305,12 +310,19 @@ function average(values) {
 }
 
 function splitByAverage(values, avg) {
-	const left = []
-	const right = []
+	let left = []
+	let right = []
 
 	for (let i = 0; i < values.length; i++) {
 		if (values[i] <= avg) left.push(i)
 		else right.push(i)
+	}
+
+	// switch sides if dataset 0 is selected to be on the right side
+	if (right.includes(0)) {
+		const temp = right
+		right = left
+		left = temp
 	}
 
 	return { right, left }

@@ -41,7 +41,10 @@ module.exports = rc('catchart', {
 	usePatterns: false,
 
 	// size of the buffer
-	windowSize: 50,
+	windowSize: 200,
+
+	// use this flag in increase performance of the chart
+	disableAnimation: false,
 
 	// delay (in ms) before shutting down server once ths input stream ended
 	shutdownDelay: 1000,
