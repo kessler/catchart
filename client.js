@@ -62,7 +62,7 @@ function main() {
 			borderColor: borderColor.toString(),
 			backgroundColor,
 			borderWidth: 1,
-			fill: true,
+			fill: !context.noFill,
 			tension: 0.2,
 			label: `dataset #${i + 1}`,
 			data: []

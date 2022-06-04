@@ -147,7 +147,7 @@ module.exports = function(config) {
 
 		let yAxisAlignment
 
-		if (config.autoAlignYAxis) {
+		if (!config.disableAutoAlignYAxis) {
 			debug('autoAlignYAxis is enabled')
 			const parsed = state.parseFunction(data)
 			const sliced = state.dataFunction(parsed)

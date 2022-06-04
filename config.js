@@ -26,10 +26,12 @@ module.exports = rc('catchart', {
 	// when labels cannot be obtained, use timeSeries
 	labelSource: 'auto',
 
-	autoAlignYAxis: true,
 
 	// show labels on values in the chart
 	showValueLabels: false,
+
+	// by default catchart will try to "guess" which side to align the Y values of a data series if there's more than one
+	disableAutoAlignYAxis: false,
 
 	// do not fill the area under chart lines with color
 	noFill: false,
