@@ -51,4 +51,8 @@ if (program.usePatterns === undefined) {
 	program.usePatterns = config.usePatterns
 }
 
+if (program.disableAnimation === undefined) {
+	program.disableAnimation = config.disableAnimation
+}
+
 module.exports = program
