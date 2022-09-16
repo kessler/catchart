@@ -148,7 +148,6 @@ module.exports = function(config) {
 
 		let yAxisAlignment
 		
-
 		if (!config.disableAutoAlignYAxis) {
 			debug('autoAlignYAxis is enabled')
 			
