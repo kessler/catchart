@@ -301,6 +301,7 @@ const parseFunctions = {
 }
 
 function calcNumberMagnitude(n) {
+	if (n === 0) return 0
 	return Math.floor(Math.log10(Math.abs(n)))
 }
 
