@@ -55,10 +55,21 @@ const Slicer = require('stream-slicer')
 process.stdin.pipe(new Slicer()).pipe(catchart())
 ```
 
+## features
+- support most of chart.js chart types
+- support json and simple array input formats
+- specify configuration through environment variables, files or cli parameters (see rc module and commander module for further information)
+- fill the area until the line, also supports patterns.
+- restrict the amount of displayed data using --windowSize. Catchart will dump data that falls outside of the window.
+- align data to a left or right Y axis using configuration or automatically:
+  * `--yLeft=[0, 1, 2]` and `--yRight=[3, 4]` will make series 0, 1 and 2 be on the left and 3,4 on the right. When using this config, all the series indices must be specified.
+  * Auto align Y axis: a somewhat feeble/experimental attempt at grouping series with similar magnitude on the left and right Y axes. `--disableAutoAlignYAxis` to disable 
+
 ## dev
 - clone this repo
 - hack
 - npm run build_client; node emitter `<csv | singlecsv | json>` | node catchart`
+- also `node emitter.js csv | node catchart.js --yLeft=[0,1] --yRight=[2,3]`
 - send a PR :)
 
 ### TODOS

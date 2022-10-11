@@ -18,6 +18,8 @@ While this option is set to "auto" then label will be obtained from "label" or "
 When the input format is csv and labelSource is set to "auto" then the label will be the time difference from the start
 to the data point. Setting labelSource to "row" will case the label to be extracted from the data, specifically the first
 value in each row will be considered the label`, config.labelSource)
+	.option('--yLeft', 'A json array expression, tells catchart which series Y values are aligned on the LEFT Y axis. Overrides auto align.', config.yLeft)
+	.option('--yRight', 'A json array expression, tells catchart which series Y values are aligned on the RIGHT Y axis. Overrides auto align.', config.yRight)
 	.option('--disableAutoAlignYAxis', 'by default catcahrt will try to automatically align data sets to the left or right based on their values', config.disableAutoAlignYAxis)
 	.option('--showValueLabels', 'show labels on values in the chart', config.showValueLabels)
 	.option('--noFill', 'Do not fill the area under the chart line with color', config.noFill)

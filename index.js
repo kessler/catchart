@@ -147,8 +147,9 @@ module.exports = function(config) {
 		}
 
 		let yAxisAlignment
-		
-		if (!config.disableAutoAlignYAxis) {
+		let alignmentFromEnv = getAlignmentFromConfig(config)
+
+		if (!config.disableAutoAlignYAxis && !alignmentFromEnv) {
 			debug('autoAlignYAxis is enabled')
 			
 			const nMags = sliced.map(calcNumberMagnitude)
@@ -156,11 +157,12 @@ module.exports = function(config) {
 			debug('values magnitude vector is %o, magnitude average is %s', nMags, magAvg)
 			
 			yAxisAlignment = splitByAverage(nMags, magAvg)
-			debug(`data series aligment is: left %o, right %o`, yAxisAlignment.left, yAxisAlignment.right)
 		} else {
 			// map all to left otherwise
-			yAxisAlignment = { left: sliced.map((v, i) => i), right: [] }
+			yAxisAlignment = alignmentFromEnv || { left: sliced.map((v, i) => i), right: [] }
 		}
+
+		debug(`data series aligment is: left %o, right %o`, yAxisAlignment.left, yAxisAlignment.right)
 
 		const clientContext = {
 			chartType: config.chartType,
@@ -361,4 +363,33 @@ function createClientPage(clientContext) {
 		</body>
 	</html>
 	`
+}
+
+function getAlignmentFromConfig(cfg) {
+	let left = safeJSONParse(cfg.yLeft)
+	let right = safeJSONParse(cfg.yRight)
+	debug(123123123, left, right)
+	if (!Array.isArray(left)) {
+		left = []
+	}
+
+	if (!Array.isArray(right)) {
+		right = []
+	}
+
+	if (left.length === 0 && right.length === 0) {
+		return
+	}
+	
+	return { left, right }
+}
+
+function safeJSONParse(str) {
+	try {
+		return JSON.parse(str)
+	} catch (e) {
+		if (!(e instanceof SyntaxError)) {
+			throw e
+		}
+	}
 }
