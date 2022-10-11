@@ -368,7 +368,7 @@ function createClientPage(clientContext) {
 function getAlignmentFromConfig(cfg) {
 	let left = safeJSONParse(cfg.yLeft)
 	let right = safeJSONParse(cfg.yRight)
-	debug(123123123, left, right)
+	
 	if (!Array.isArray(left)) {
 		left = []
 	}
