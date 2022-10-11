@@ -30,8 +30,8 @@ module.exports = rc('catchart', {
 	showValueLabels: false,
 
 	// A json array expression, tells catchart which series Y values are aligned on the LEFT/RIGHT Y axis. Overrides auto align.
-	yLeft: undefined,
-	yRight: undefined,
+	yLeft: [],
+	yRight: [],
 
 	// by default catchart will try to "guess" which side to align the Y values of a data series if there's more than one
 	disableAutoAlignYAxis: false,
