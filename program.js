@@ -37,6 +37,14 @@ if (program.rowSeparator === undefined) {
 	program.rowSeparator = config.rowSeparator
 }
 
+if (program.yLeft === undefined) {
+	program.yLeft = config.yLeft
+}
+
+if (program.yRight === undefined) {
+	program.yRight = config.yRight
+}
+
 if (program.disableAutoAlignYAxis === undefined) {
 	program.disableAutoAlignYAxis = config.disableAutoAlignYAxis
 }
