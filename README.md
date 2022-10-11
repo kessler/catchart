@@ -59,10 +59,10 @@ process.stdin.pipe(new Slicer()).pipe(catchart())
 - support most of chart.js chart types
 - support json and simple array input formats
 - specify configuration through environment variables, files or cli parameters (see rc module and commander module for further information)
-- fill the area until the line, also supports patterns.
+- fill the area under the line, also supports patterns.
 - restrict the amount of displayed data using --windowSize. Catchart will dump data that falls outside of the window.
 - align data to a left or right Y axis using configuration or automatically:
-  * `--yLeft=[0, 1, 2]` and `--yRight=[3, 4]` will make series 0, 1 and 2 be on the left and 3,4 on the right. When using this config, all the series indices must be specified.
+  * `--yLeft=[0, 1, 2]` and `--yRight=[3, 4]` will make series 0, 1 and 2 be on the left and 3,4 on the right. When using this config, all the series indices must be specified. With arrays the first item is the X value, if your input array is [1,2,3,4,5], yLeft=0,1 and yRight=3,4 will put 2 and 3 on the left Y axis and 3,4 on the right Y axis for X=1
   * Auto align Y axis: a somewhat feeble/experimental attempt at grouping series with similar magnitude on the left and right Y axes. `--disableAutoAlignYAxis` to disable 
 
 ## dev
