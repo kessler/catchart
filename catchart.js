@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 const catchart = require('./index')
-const StreamSlicer = require('stream-slicer')
+const split = require('split')
 const { pipeline } = require('stream')
 const program = require('./program')
 
-let slicer = new StreamSlicer({ sliceBy: program.rowSeparator })
-let chartStream = catchart(program)
+const chartStream = catchart(program)
 
-pipeline(process.stdin, slicer, chartStream, err => {
+pipeline(process.stdin, split(program.rowSeparator), chartStream, err => {
 	if (err) {
-		return console.error(err)
+		console.error(err)
+		return 
 	}
 })
