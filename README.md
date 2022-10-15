@@ -44,15 +44,15 @@ chart types: `line`, `bar`, `radar`, `pie`, `doughnut`, `scatter`, `polar`, `bub
 echo "{ \"data\": 1 }"\n"{ \"data\": 2, \"label\": \"foo\" }"\n | catchart
 ```
 
-
 ## api
 `catchart` cli in it's simplest form, looks very much like this:
 
 ```js
-const catchart = require('catchart')
-const Slicer = require('stream-slicer')
+const { pipeline } = require('stream')
+const catchart = require('./index')
+const split = require('split')
 
-process.stdin.pipe(new Slicer()).pipe(catchart())
+pipeline(process.stdin, split(), catchart(), err => err ? console.error(err) : undefined)
 ```
 
 ## features
