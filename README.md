@@ -65,6 +65,10 @@ pipeline(process.stdin, split(), catchart(), err => err ? console.error(err) : u
   * `--yLeft=[0, 1, 2]` and `--yRight=[3, 4]` will make series 0, 1 and 2 be on the left and 3,4 on the right. When using this config, all the series indices must be specified. With arrays the first item is the X value, if your input array is [1,2,3,4,5], yLeft=0,1 and yRight=3,4 will put 2 and 3 on the left Y axis and 3,4 on the right Y axis for X=1
   * Auto align Y axis: a somewhat feeble/experimental attempt at grouping series with similar magnitude on the left and right Y axes. `--disableAutoAlignYAxis` to disable 
 
+## use with Claude Code
+
+A [Claude Code skill](https://code.claude.com/docs/en/skills) template ships with this package as `skill.template.md`. Copy it to `~/.claude/skills/catchart/SKILL.md` (user-level) or `<project>/.claude/skills/catchart/SKILL.md` (project-level) to let Claude reach for catchart automatically when you ask it to chart/graph/plot data on the command line.
+
 ## dev
 - clone this repo
 - hack
