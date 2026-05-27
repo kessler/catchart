@@ -62,7 +62,7 @@ function main() {
 			backgroundColor = borderColor.toString(0.2)
 		}
 
-		let label = `dataset #${i + 1}`
+		let label = (context.datasetNames && context.datasetNames[i]) || `dataset #${i + 1}`
 
 		const dataset = {
 			yAxisID: 'yLeft',

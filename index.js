@@ -146,6 +146,20 @@ module.exports = function(config) {
 			debug('setting fieldCount to "%d", deduced from first row of data', sliced.length)
 		}
 
+		let datasetNames = Array.isArray(config.datasetNames)
+			? config.datasetNames
+			: safeJSONParse(config.datasetNames)
+
+		if (!Array.isArray(datasetNames)) {
+			datasetNames = []
+		}
+
+		if (datasetNames.length > config.fieldCount) {
+			throw new Error(`--datasetNames has ${datasetNames.length} entries but only ${config.fieldCount} datasets exist`)
+		}
+
+		debug('datasetNames resolved to %o', datasetNames)
+
 		let yAxisAlignment
 		let alignmentFromConfig = getAlignmentFromConfig(config)
 
@@ -173,7 +187,8 @@ module.exports = function(config) {
 			fieldCount: config.fieldCount,
 			showValueLabels: config.showValueLabels,
 			disableAnimation: config.disableAnimation,
-			yAxisAlignment
+			yAxisAlignment,
+			datasetNames
 		}
 
 		debug('client context: %o', clientContext)

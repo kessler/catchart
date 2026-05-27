@@ -26,6 +26,7 @@ value in each row will be considered the label`, config.labelSource)
 	.option('--disableAnimation', 'use this flag in increase performance of the chart', config.disableAnimation)
 	.option('--usePatterns', 'Fill the area under the chart line with a pattern, this is meant for individuals who suffer from color blindness', config.usePatterns)
 	.option('--fieldCount <fieldCount>', 'The number of fields that are piped to catchart in each row, "auto" will try to deduce this value from the first row of data', config.fieldCount)
+	.option('--datasetNames <datasetNames>', 'A JSON array of names for each dataset, e.g. \'["temp","humidity"]\'. Missing slots fall back to "dataset #N". Passing more names than datasets is an error.', config.datasetNames)
 	.option('--port <port>', 'hcat config: http port to use, defaults to a randomly picked port', 0)
 	.option('--hostname <hostname>', 'hcat config: hostname of the http server', config.hostname)
 	.option('--contentType <contentType>', 'hcat config: content type of the response', config.contentType)
@@ -63,6 +64,10 @@ if (program.usePatterns === undefined) {
 
 if (program.disableAnimation === undefined) {
 	program.disableAnimation = config.disableAnimation
+}
+
+if (program.datasetNames === undefined) {
+	program.datasetNames = config.datasetNames
 }
 
 module.exports = program

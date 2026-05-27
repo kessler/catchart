@@ -55,6 +55,11 @@ module.exports = rc('catchart', {
 	// how many fields are in a row
 	fieldCount: 'auto',
 
+	// custom dataset names. JSON array string from the CLI or a real array
+	// programmatically. Missing slots fall back to "dataset #N"; more entries
+	// than fieldCount is rejected as a likely user mistake.
+	datasetNames: [],
+
 	title: `${new Date()} ::: ${process.cwd()}`,
 
 	chartType: 'line',

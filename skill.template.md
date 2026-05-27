@@ -44,6 +44,12 @@ printf "1,2,3\n4,5,6\n-1,-2,-3\n" | catchart -c bar -t "three series"
 ```
 Three values per row → three series. Labels on the X axis default to elapsed time since the first row arrived.
 
+**Multiple series with custom names**
+```
+printf "1,2\n3,4\n" | catchart --datasetNames='["temp","humidity"]'
+```
+Names appear in the legend instead of `dataset #1`, `dataset #2`. Pass fewer names than columns to keep defaults for unnamed slots; passing more names than columns errors out.
+
 **CSV with explicit row labels**
 ```
 printf "mon,10,20\ntue,12,18\nwed,15,25\n" | catchart --labelSource=row
@@ -90,6 +96,7 @@ Pick by data shape:
 | `--dataField <name>` | Which JSON field is the value (default: tries `value` then `data`) |
 | `--labelSource <auto\|row\|<name>>` | `row` = first CSV field is the label; or a JSON field name |
 | `--yLeft '[0,1]' --yRight '[2]'` | Pin specific series to left/right Y axes (for mixed magnitudes) |
+| `--datasetNames '["a","b"]'` | JSON array of legend names; missing slots fall back to `dataset #N`, extras error |
 | `--disableAutoAlignYAxis` | Turn off the magnitude-based auto-grouping of series across two Y axes |
 | `--noFill` | Don't fill area under line |
 | `--usePatterns` | Color-blind-friendly fill patterns |

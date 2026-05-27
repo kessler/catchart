@@ -31,6 +31,12 @@ echo 1,2,3\n4,5,6\n-1,-2,-3\n | catchart
 ```
 <img src="/3.png?raw=true" width="400">
 
+#### named data sets
+```
+echo 1,2,3\n4,5,6\n-1,-2,-3\n | catchart --datasetNames='["temp","humidity","pressure"]'
+```
+Names appear in the legend instead of `dataset #1`, `dataset #2`, ... Missing slots fall back to the default; passing more names than series is an error.
+
 #### other chart types, custom title
 ```
 echo 1,2,3\n4,5,6\n-1,-2,-3 | catchart --title=catchart --chartType=bar
