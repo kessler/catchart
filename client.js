@@ -9,8 +9,9 @@ function main() {
 
 	const context = global.$$context
 
+	const plugins = []
 	if (context.showValueLabels) {
-		labelPlugin()
+		plugins.push(valueLabelPlugin())
 	}
 
 	const chartData = {
@@ -84,6 +85,8 @@ function main() {
 
 		chartData.datasets.push(dataset)
 	}
+
+	chartConfig.plugins = plugins
 
 	const chart = new Chart(document.getElementById('myChart'), chartConfig)
 
@@ -168,40 +171,39 @@ function pickPattern() {
 	return patternNames[patternIndex++]
 }
 
-function labelPlugin() {
-	Chart.plugins.register({
-		afterDatasetsDraw
-	})
+function valueLabelPlugin() {
+	return {
+		id: 'valueLabel',
+		afterDatasetsDraw(chart) {
+			const ctx = chart.ctx
 
-	function afterDatasetsDraw(chart, easing) {
+			for (let i = 0; i < chart.data.datasets.length; i++) {
+				let dataset = chart.data.datasets[i]
+				let meta = chart.getDatasetMeta(i)
+				if (meta.hidden) {
+					continue
+				}
 
-		// To only draw at the end of animation, check for easing === 1
-		var ctx = chart.ctx
-
-		for (let i = 0; i < chart.data.datasets.length; i++) {
-			let dataset = chart.data.datasets[i]
-			var meta = chart.getDatasetMeta(i)
-			if (!meta.hidden) {
 				for (let j = 0; j < meta.data.length; j++) {
 					let element = meta.data[j]
 
 					// Draw the text in black, with the specified font
 					ctx.fillStyle = 'rgb(0, 0, 0)'
 
-					var fontSize = 16
-					var fontStyle = 'normal'
-					var fontFamily = 'Helvetica Neue'
-					ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily)
+					const fontSize = 16
+					const fontStyle = 'normal'
+					const fontFamily = 'Helvetica Neue'
+					ctx.font = `${fontStyle} ${fontSize}px "${fontFamily}"`
 
 					// Just naively convert to string for now
-					var dataString = dataset.data[j].toString()
+					let dataString = dataset.data[j].toString()
 
 					// Make sure alignment settings are correct
 					ctx.textAlign = 'center'
 					ctx.textBaseline = 'middle'
 
-					var padding = 5
-					var position = element.tooltipPosition()
+					const padding = 5
+					let position = element.tooltipPosition()
 					ctx.fillText(dataString, position.x, position.y - (fontSize / 2) - padding)
 				}
 			}
