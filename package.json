@@ -1,6 +1,6 @@
 {
   "name": "catchart",
-  "version": "3.2.11",
+  "version": "3.2.12",
   "description": "Pipe something from command line to a browser chart",
   "license": "MIT",
   "author": {
