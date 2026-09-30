@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.2.13] - 2026-09-30
+### Fixed
+- JSON input no longer crashes on Node 23+ with `TypeError: isNullOrUndefined is not a function`. The removed `util.isNullOrUndefined` is replaced with an explicit null/undefined check.
+
 ## [3.2.12] - 2026-06-07
 ### Fixed
 - `--showValueLabels` no longer crashes the chart page. The value-label plugin used the removed Chart.js v2 API (`Chart.plugins.register`, `Chart.helpers.fontString`); it is now a Chart.js v3 inline plugin.

@@ -9,8 +9,6 @@ const debug = require('debug')('catchart')
 const defaultConfig = require('./config')
 const enableDestroy = require('server-destroy')
 
-const { isNullOrUndefined } = require('util')
-
 const timeFormatter = new HumanTime({
 	names: {
 		millisecond: ' ms',
@@ -349,7 +347,7 @@ function extractJson(fields) {
 	return data => {
 		for (let f of fields) {
 			let value = data[f]
-			if (!isNullOrUndefined(value)) {
+			if (value !== null && value !== undefined) {
 				return value
 			}
 		}
