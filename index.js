@@ -18,6 +18,10 @@ const timeFormatter = new HumanTime({
 	}
 })
 
+// maximum number of buffered entries awaiting websocket transmission,
+// bounds memory usage when the client is slow or disconnected
+const MAX_BUFF_SIZE = 10000
+
 module.exports = function(config) {
 	let done = false
 	let initialized = false
@@ -72,6 +76,11 @@ module.exports = function(config) {
 
 		debug('process input [%o]', entry)
 		state.buff.push(entry)
+
+		// prevent unbounded memory growth if the buffer isn't being drained fast enough
+		if (state.buff.length > MAX_BUFF_SIZE) {
+			state.buff.shift()
+		}
 
 		cb()
 	}
